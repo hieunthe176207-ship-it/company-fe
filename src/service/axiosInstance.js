@@ -1,0 +1,102 @@
+import axios from "axios";
+
+const fetch = axios.create({
+  baseURL: "http://103.140.249.98:8080",
+});
+
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
+fetch.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+fetch.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Nếu lỗi 401 và là lỗi hết hạn
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      error.response.data.message === "Token has expired" &&
+      !originalRequest._retry
+    ) {
+      if (isRefreshing) {
+        // Chờ refresh xong rồi retry lại
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = "Bearer " + token;
+            return fetch(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+      const refreshToken = localStorage.getItem("refresh_token");
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/auth/refresh-token",
+          null,
+          {
+            params: {
+              Rtoken: refreshToken,
+            },
+          }
+        );
+
+        const newAccessToken = res.data.data;
+        localStorage.setItem("access_token", newAccessToken);
+        processQueue(null, newAccessToken);
+        originalRequest.headers.Authorization = "Bearer " + newAccessToken;
+        return fetch(originalRequest);
+      } catch (err) {
+        processQueue(err, null);
+        // Nếu refresh thất bại  -> logout
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        window.location.href = "/auth";
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // Các lỗi khác
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      window.location.href = "/auth";
+    }
+    if (error.response && error.response.status === 403) {
+      window.location.href = "/fobiden";
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default fetch;

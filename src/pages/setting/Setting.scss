@@ -1,0 +1,116 @@
+.setting-root {
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px 0;
+  flex: 1 1 0;
+  box-sizing: border-box;
+}
+
+.setting-flex {
+  display: flex;
+  gap: 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: stretch;
+  width: 100%;
+}
+
+.setting-card {
+  flex: 0 0 320px;
+  max-width: 320px;
+  min-width: 240px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 32px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  height: fit-content;
+}
+
+.setting-avatar,
+.setting-avatar.MuiAvatar-root {
+  width: 125px !important;
+  height: 125px !important;
+  
+  object-fit: cover;
+}
+
+.setting-upload-btn {
+  margin-bottom: 24px;
+  width: 100%;
+  border-radius: 6px;
+  color: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.setting-divider {
+  margin: 24px 0 16px 0;
+  width: 100%;
+}
+
+.setting-input {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.setting-password-btn {
+  width: 100%;
+  background: #7c3aed;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 6px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  &:hover {
+    background: #5b21b6;
+  }
+}
+
+.setting-section {
+  flex: 1 1 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 32px 24px 24px 24px;
+  margin: 0;
+  min-width: 0;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.setting-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.setting-info-row > * {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.setting-bio {
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .setting-flex {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .setting-card, .setting-section {
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+  }
+  .setting-info-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
