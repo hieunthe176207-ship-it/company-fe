@@ -1,0 +1,43 @@
+name: Frontend CI - Build & Push Docker
+
+on:
+  push:
+    branches: [ "main" ]       # nếu bạn dùng branch khác thì đổi lại
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # Bước này chỉ để đảm bảo code build được (không bắt buộc, nhưng tốt)
+      - name: Install deps & build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .            # Dockerfile nằm ngay root
+          file: ./Dockerfile
+          push: true
+          tags: |
+            hieunguyen176207/web-app:frontend-company
+            hieunguyen176207/web-app:frontend-${{ github.sha }}

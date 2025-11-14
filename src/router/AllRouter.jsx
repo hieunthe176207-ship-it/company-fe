@@ -31,6 +31,7 @@ import History from "../pages/history/History";
 import Security from "../pages/security/Security";
 import HomeRouter from "./HomeRouter";
 import CandidateRouter from "./CandidateRouter";
+import Test from "../pages/test/Test";
 
 const AllRouter = () => {
   const router = [
@@ -129,6 +130,10 @@ const AllRouter = () => {
         {
           path: "/idea",
           element: <SendIdea></SendIdea>,
+        },
+         {
+          path: "/test",
+          element: <Test></Test>,
         },
         {
           path: "/view-idea",
