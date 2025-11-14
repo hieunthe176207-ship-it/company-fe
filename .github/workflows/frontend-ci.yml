@@ -39,5 +39,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            hieunguyen176207/web-app:frontend-company
+            hieunguyen176207/web-app:frontend_company
             hieunguyen176207/web-app:frontend-${{ github.sha }}
